@@ -152,3 +152,8 @@ body {
   background-clip: content-box;
   border-radius: 0.7rem;
 }
+
+#comparison-table {
+  min-height: 345px;
+  line-height: 24px;
+}

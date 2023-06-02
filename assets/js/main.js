@@ -1,20 +1,51 @@
 (function () {
-  mixPieChart();
+  const data = [
+    {
+      name: "Product Owned",
+      session: 346912,
+      conversion: 381,
+      color: "#BEE9E8"
+    },
+    {
+      name: "Behavioral",
+      session: 19054,
+      conversion: 153,
+      color: "#B8BEDD"
+    },
+    {
+      name: "Default",
+      session: 60450,
+      conversion: 100,
+      color: "#57CC99"
+    },
+    {
+      name: "FTV",
+      session: 1797,
+      conversion: 9,
+      color: "#1B98E0"
+    },
+    {
+      name: "K-Cluster",
+      session: 565,
+      conversion: 9,
+      color: "#247BA0"
+    },
+    {
+      name: "Segment",
+      session: 4530,
+      conversion: 9,
+      color: "#5FA8D3"
+    }
+  ];
+
+  mixPieChart('mix-pie-chart', data);
   TrendlineChart();
   ComparisonTable(
     'comparison-table',
     ['ALGORITHM TYPE', 'SESSIONS', 'APPLICATION CONVERSION', 'CONVERSION RATE'],
-    [
-      ['Products Owned', 346912, 381, 0.11],
-      ['Behavioral', 19054, 153, 0.8],
-      ['Default', 60450, 100, 0.17],
-      ['FTV', 1797, 9, 0.5],
-      ['K-Cluster', 565, 9, 1.59],
-      ['Segment', 4530, 9, 0.2]
-    ],
-    ['Grand Total', 433308, 661, 0.15]
+    data
   );
-  MatrixBubbleChart();
+  MatrixBubbleChart('matrix-bubble-chart', data);
 })();
 
 function findTick(x, ticks, range) {
@@ -40,8 +71,19 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     return parts.join(dec_point);
 }
 
-function mixPieChart() {
-  Highcharts.chart('mix-pie-chart', {
+function mixPieChart(id, data) {
+  let seriesData = [];
+
+  const totalSessions = data.reduce((pv, cv) => pv + cv.session, 0);
+  data.forEach(item => {
+    seriesData.push({
+      name: item.name,
+      color: item.color,
+      y: parseFloat(number_format(item.session / totalSessions * 100, 1))
+    })
+  });
+
+  Highcharts.chart(id, {
     credits: {
       enabled: false,
     },
@@ -125,38 +167,7 @@ function mixPieChart() {
           enabled: false,
         }
       },
-      data: [
-        {
-          name: 'Segment',
-          y: 80.1,
-          color: '#5FA8D3',
-        },
-        {
-          name: 'Product Owned',
-          y: 1,
-          color: '#BEE9E8',
-        },
-        {
-          name: 'K-Cluster',
-          y: 15,
-          color: '#247BA0',
-        },
-        {
-          name: 'FTV',
-          y: 14,
-          color: '#1B98E0',
-        },
-        {
-          name: 'Default',
-          y: 2,
-          color: '#57CC99',
-        },
-        {
-          name: 'Behavioral',
-          y: 1,
-          color: '#B8BEDD',
-        },
-      ]
+      data: seriesData
     }, {
       borderWidth: 0,
       borderRadius: 0,
@@ -176,38 +187,7 @@ function mixPieChart() {
           enabled: false,
         }
       },
-      data: [
-        {
-          name: 'Segment',
-          y: 80.1,
-          color: '#5FA8D3',
-        },
-        {
-          name: 'Product Owned',
-          y: 1,
-          color: '#BEE9E8',
-        },
-        {
-          name: 'K-Cluster',
-          y: 15,
-          color: '#247BA0',
-        },
-        {
-          name: 'FTV',
-          y: 14,
-          color: '#1B98E0',
-        },
-        {
-          name: 'Default',
-          y: 2,
-          color: '#57CC99',
-        },
-        {
-          name: 'Behavioral',
-          y: 1,
-          color: '#B8BEDD',
-        },
-      ]
+      data: seriesData
     }]
   });
 }
@@ -305,7 +285,7 @@ function TrendlineChart() {
   });
 }
 
-function ComparisonTable(tableId, header, data, footer) {
+function ComparisonTable(tableId, header, data) {
   let table = document.getElementById(tableId);
   let html = `
     <div class="table-responsive m-2">
@@ -320,46 +300,34 @@ function ComparisonTable(tableId, header, data, footer) {
         </thead>
         <tbody>`;
 
-  let maxSession = data[0][1];
-  let minSession = data[0][1];
-  let maxConversion = data[0][2];
-  let minConversion = data[0][2];
-  let maxRate = data[0][3];
-  let minRate = data[0][3];
-
-  data.forEach(item => {
-    if (item[1] > maxSession)
-      maxSession = item[1];
-    if (item[1] < minSession)
-      minSession = item[1];
-
-    if (item[2] > maxConversion)
-      maxConversion = item[2];
-    if (item[2] < minConversion)
-      minConversion = item[2];
-
-    if (item[3] > maxRate)
-      maxRate = item[3];
-    if (item[3] < minRate)
-      minRate = item[3];
-  });
+  let maxSession = data.reduce((pv, cv) => (cv.session > pv) ? cv.session : pv , -Infinity);
+  let minSession = data.reduce((pv, cv) => (cv.session < pv) ? cv.session : pv , Infinity);
+  let maxConversion = data.reduce((pv, cv) => (cv.conversion > pv) ? cv.conversion : pv , -Infinity);
+  let minConversion = data.reduce((pv, cv) => (cv.conversion < pv) ? cv.conversion : pv , Infinity);
+  let maxRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 > pv) ? ((cv.conversion / cv.session) * 100) : pv , -Infinity);
+  let minRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 < pv) ? ((cv.conversion / cv.session) * 100) : pv , Infinity);
+  let totalSessions = 0;
+  let totalConversions = 0;
 
 
   data.forEach(row => {
+    totalSessions += row.session;
+    totalConversions += row.conversion;
+
     html += `
           <tr>
-            <th scope="row" class="first-td">` + row[0] + `</th>
-            <td class="text-end">` + number_format(row[1]) + `</td>`;
+            <th scope="row" class="first-td">` + row.name + `</th>
+            <td class="text-end">` + number_format(row.session) + `</td>`;
 
-    const barWidth = 2 + (48 / parseFloat(maxSession - minSession)) * parseFloat(row[1] - minSession);
+    const barWidth = 2 + (48 / parseFloat(maxSession - minSession)) * parseFloat(row.session - minSession);
     html += `<td class="text-start"><span class="bar" style="padding: 0px ` + parseInt(barWidth) + `px;"></span></td>
-            <td class="text-end">` + number_format(row[2]) + `</td>`;
+            <td class="text-end">` + number_format(row.conversion) + `</td>`;
 
-    const conversionWidth = 2 + (48 / parseFloat(maxConversion - minConversion)) * (row[2] - minConversion);
+    const conversionWidth = 2 + (48 / parseFloat(maxConversion - minConversion)) * (row.conversion - minConversion);
     html += `<td class="text-start"><span class="bar" style="padding: 0px ` + parseInt(conversionWidth) + `px;"></span></td>`;
 
-    const transparency = 0.2 + (0.5 / (maxRate - minRate)) * (row[3] - minRate);
-    html += `<td class="text-center percentage align-middle" style="background-color: rgba(36,123,160,` + transparency + `);">` + row[3] + `%</td>
+    const transparency = 0.2 + (0.5 / (maxRate - minRate)) * ((row.conversion / row.session * 100) - minRate);
+    html += `<td class="text-center percentage align-middle" style="background-color: rgba(36,123,160,` + transparency + `);">` + number_format(row.conversion / row.session * 100, 2) + `%</td>
           </tr>`;
   });
 
@@ -367,12 +335,12 @@ function ComparisonTable(tableId, header, data, footer) {
         </tbody>
         <tfoot>
           <tr>
-            <th scope="row">` + footer[0] + `</th>
-            <td class="text-end">` + number_format(footer[1]) + `</td>
+            <th scope="row">Grand Total</th>
+            <td class="text-end">` + number_format(totalSessions) + `</td>
             <td></td>
-            <td class="text-end">` + number_format(footer[2]) + `</td>
+            <td class="text-end">` + number_format(totalConversions) + `</td>
             <td></td>
-            <td class="text-center percentage">` + footer[3] + `%</td>
+            <td class="text-center percentage">` + number_format(totalConversions / totalSessions * 100, 2) + `%</td>
           </tr>
         </tfoot>
       </table>
@@ -381,8 +349,24 @@ function ComparisonTable(tableId, header, data, footer) {
   table.innerHTML = html;
 }
 
-function MatrixBubbleChart() {
-  Highcharts.chart('matrix-bubble-chart', {
+function MatrixBubbleChart(id, data) {
+  let seriesData = [];
+  let totalSessions = 0;
+  let totalRate = 0;
+  data.forEach(item => {
+    totalSessions += item.session;
+    const rate = item.conversion / item.session * 100;
+    totalRate += rate;
+    seriesData.push({
+      x: item.session,
+      y: rate,
+      z: 5,
+      name: item.name,
+      color: item.color
+    });
+  });
+
+  Highcharts.chart(id, {
     credits: {
       enabled: false,
     },
@@ -392,6 +376,7 @@ function MatrixBubbleChart() {
       style: {
         fontFamily: "Inter",
         fontWeight: 500,
+        height: '350px',
       },
     },
 
@@ -425,7 +410,7 @@ function MatrixBubbleChart() {
         color: '#EAEAEA',
         dashStyle: 'Dot',
         width: 2,
-        value: 100000,
+        value: totalSessions / data.length,
         zIndex: 1,
         label: {
           useHTML: true,
@@ -467,7 +452,7 @@ function MatrixBubbleChart() {
         color: '#EAEAEA',
         dashStyle: 'Dot',
         width: 2,
-        value: 0.6,
+        value: totalRate / data.length,
         zIndex: 1,
         label: {
           useHTML: true,
@@ -498,15 +483,15 @@ function MatrixBubbleChart() {
       }
     },
 
+    tooltip: {
+      borderRadius: 8,
+      formatter: function () {
+        return '<span style="color:' + this.color + '"> ● </span>' + ' ' + this.key;
+      },
+    },
+
     series: [{
-      data: [
-        { x: 346912, y: 0.11, z: 5, name: 'Product Owned', color: '#BEE9E8'},
-        { x: 19054, y: 0.8, z: 5, name: 'Behavioral', color: '#5FA8D3'},
-        { x: 60450, y: 0.17, z: 5, name: 'Default', color: '#57CC99'},
-        { x: 1797, y: 0.5, z: 5, name: 'FTV', color: '#1B98E0'},
-        { x: 565, y: 1.59, z: 5, name: 'K-Cluster', color: '#1B98E0'},
-        { x: 4530, y: 0.2, z: 5, name: 'Segment', color: '#B8BEDD'}
-      ],
+      data: seriesData
     }]
   });
 }
