@@ -2,18 +2,22 @@
   font-family: "Inter";
   src: url("../fonts/Inter-Regular.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Inter-Bold";
   src: url("../fonts/Inter-Bold.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Inter-ExtraBold";
   src: url("../fonts/Inter-ExtraBold.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Inter-SemiBold";
   src: url("../fonts/Inter-SemiBold.ttf") format("truetype");
 }
+
 @font-face {
   font-family: "Inter-Light";
   src: url("../fonts/Inter-Light.ttf") format("truetype");
@@ -31,7 +35,7 @@
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #1B98E0;
   --bs-btn-hover-border-color: #1B98E0;
-  --bs-btn-focus-shadow-rgb: 13,110,253;
+  --bs-btn-focus-shadow-rgb: 13, 110, 253;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #1B98E0;
   --bs-btn-active-border-color: #1B98E0;
@@ -51,7 +55,7 @@
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #1B98FF;
   --bs-btn-hover-border-color: #1B98FF;
-  --bs-btn-focus-shadow-rgb: 49,132,253;
+  --bs-btn-focus-shadow-rgb: 49, 132, 253;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #1B98FF;
   --bs-btn-active-border-color: #1B98FF;

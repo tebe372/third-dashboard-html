@@ -300,12 +300,12 @@ function ComparisonTable(tableId, header, data) {
         </thead>
         <tbody>`;
 
-  let maxSession = data.reduce((pv, cv) => (cv.session > pv) ? cv.session : pv , -Infinity);
-  let minSession = data.reduce((pv, cv) => (cv.session < pv) ? cv.session : pv , Infinity);
-  let maxConversion = data.reduce((pv, cv) => (cv.conversion > pv) ? cv.conversion : pv , -Infinity);
-  let minConversion = data.reduce((pv, cv) => (cv.conversion < pv) ? cv.conversion : pv , Infinity);
-  let maxRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 > pv) ? ((cv.conversion / cv.session) * 100) : pv , -Infinity);
-  let minRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 < pv) ? ((cv.conversion / cv.session) * 100) : pv , Infinity);
+  let maxSession = data.reduce((pv, cv) => (cv.session > pv) ? cv.session : pv, -Infinity);
+  let minSession = data.reduce((pv, cv) => (cv.session < pv) ? cv.session : pv, Infinity);
+  let maxConversion = data.reduce((pv, cv) => (cv.conversion > pv) ? cv.conversion : pv, -Infinity);
+  let minConversion = data.reduce((pv, cv) => (cv.conversion < pv) ? cv.conversion : pv, Infinity);
+  let maxRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 > pv) ? ((cv.conversion / cv.session) * 100) : pv, -Infinity);
+  let minRate = data.reduce((pv, cv) => ((cv.conversion / cv.session) * 100 < pv) ? ((cv.conversion / cv.session) * 100) : pv, Infinity);
   let totalSessions = 0;
   let totalConversions = 0;
 
@@ -366,7 +366,7 @@ function MatrixBubbleChart(id, data) {
     });
   });
 
-  Highcharts.chart(id, {
+  let bubbleChart = Highcharts.chart(id, {
     credits: {
       enabled: false,
     },
@@ -396,7 +396,7 @@ function MatrixBubbleChart(id, data) {
       labels: {
         formatter: function () {
           if (this.value)
-            return parseInt(this.value/1000) + 'k';
+            return parseInt(this.value / 1000) + 'k';
           else
             return 0;
         },
@@ -471,6 +471,7 @@ function MatrixBubbleChart(id, data) {
         },
         zIndex: 3
       }],
+      tickInterval: 0.5,
     },
 
     plotOptions: {
@@ -484,6 +485,7 @@ function MatrixBubbleChart(id, data) {
     },
 
     tooltip: {
+      followPointer: true,
       borderRadius: 8,
       formatter: function () {
         return '<span style="color:' + this.color + '"> ● </span>' + ' ' + this.key;
@@ -494,4 +496,5 @@ function MatrixBubbleChart(id, data) {
       data: seriesData
     }]
   });
+  bubbleChart.setSize();
 }
